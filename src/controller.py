@@ -19,31 +19,41 @@ def al_presionar(pin_boton):
 	print(en_espera)
 
 
+# Prender led por N-pin
 def prender_led(led_pin):
 	GPIO.output(led_pin, GPIO.HIGH)
 
+
+# Apagar led por N-pin
 def apagar_led(led_pin):
 	GPIO.output(led_pin, GPIO.LOW)
 
 
-# Función de mover
-def mover_a():
+# Hallar sentido de direccion comparando piso actual y destino
+def chequear_direccion(piso_dest):
+	global direccion_actual
+	if piso_actual < piso_dest:
+		direccion_actual = 1  # Dirección arriba
+	else:
+		direccion_actual = -1  # Dirección abajo
+
+
+# Función de mover al piso por número de index
+def mover_a(piso):
 	global piso_actual
+	global en_espera
 	global en_movimiento
-	global direccion_actual
 
-	for piso in en_espera:
-		for piso_intermedio in piso:
-			piso_actual = piso_intermedio
-			prender_led(LEDS_AMARILLOS[piso_actual])
-			sleep(tiempo_en_movimiento)
+	# Mover a cada piso
+	for p in range(piso_actual, piso + direccion_actual, direccion_actual):
+		prender_led(LEDS_AMARILLOS[p])
+		sleep(tiempo_en_movimiento)
+		apagar_led(LEDS_AMARILLOS[p])
+		piso_actual = p
+		print(f"Actualmente en piso {piso_actual}")
 
+	en_espera.remove(piso)
 	en_movimiento = False
-
-
-
-def buscar_piso_cercano():
-	global direccion_actual
 
 
 # Chequear el estado de los botones
@@ -60,7 +70,16 @@ def chequear_estado():
 def loop():
 	try:
 		while True:
-			chequear_estado()
+			if en_movimiento:
+				# Mover al piso solicitado
+				apagar_led(LEDS_ROJOS[piso_actual])
+				for p in en_espera:
+					chequear_direccion(p)
+					mover_a(p)
+			else:
+				# Detener el movimiento
+				# Prender luz roja
+				prender_led(LEDS_ROJOS[piso_actual])
 			sleep(0.1)
 	except KeyboardInterrupt:
 		print("Saliendo del bucle!")
@@ -80,7 +99,7 @@ for b in BOTONES:
 	GPIO.add_event_detect(b, GPIO.RISING, callback=al_presionar, bouncetime=300)
 en_espera = []  # Valores numéricos de N-piso, index
 en_movimiento = False  # Inicio detenido
-direccion_actual = 1   # 1: arriba, 0: abajo
+direccion_actual = 1   # 1: arriba, -1: abajo
 piso_actual = 0  
 tiempo_en_movimiento = 3 # 3s Entre cada piso
 
