@@ -34,6 +34,23 @@ def apagar_led(led_pin):
 	GPIO.output(led_pin, GPIO.LOW)
 
 
+# Motor enrollar soga
+def enrollar():
+
+	if direccion_actual:
+		in_1_state = GPIO.HIGH
+		in_2_state = GPIO.LOW
+	else:
+		in_1_state = GPIO.LOW
+		in_2_state = GPIO.HIGH
+
+	pwm.start(40)
+	GPIO.output(in_1, in_1_state)
+	GPIO.output(in_2, in_2_state)
+	sleep(tiempo_en_espera)
+	pwm.stop()
+
+
 # Hallar sentido de dirección actual
 # Entrada: Piso objetivo que se quiere ir (index 0-3)
 def chequear_direccion(piso_dest):
@@ -78,7 +95,8 @@ def mover_a(piso):
 			en_espera.remove(piso_actual)
 
 		# Cambio de piso
-		sleep(tiempo_en_movimiento)  # Movimiento a piso siguiente
+		enrollar()
+		# sleep(tiempo_en_movimiento)  # Movimiento a piso siguiente
 		apagar_led(pin_led_amarillo_actual)
 
 	en_espera.remove(piso)
@@ -111,13 +129,19 @@ def loop():
 LEDS_AMARILLOS = [8, 24, 18, 14]  	# LEDs que indican cambio de piso
 LEDS_ROJOS = [7, 25, 23, 15]  		# LEDs que indican detención de movimiento 
 BOTONES = [10, 22, 27, 17]  
-FUENTES = [5, 6]  					# Fuentes extras 3.3v
 GPIO.setup(LEDS_AMARILLOS, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(LEDS_ROJOS, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(FUENTES, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(BOTONES, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 for b in BOTONES:
 	GPIO.add_event_detect(b, GPIO.RISING, callback=al_presionar, bouncetime=300)
+
+# Configuración del motor
+en_a = 12
+in_1 = 16
+in_2 = 20
+GPIO.setup([en_a, in_1, in_2], GPIO.OUT, initial=GPIO.LOW)  # Configuración de salida
+pwm = GPIO.PWM(en_a, 1000)  # 1000 Hz
+
 
 # Variables del programa
 en_espera = []  			# Valores numéricos de nº index
