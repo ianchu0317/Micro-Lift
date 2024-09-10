@@ -34,20 +34,22 @@ def apagar_led(led_pin):
 	GPIO.output(led_pin, GPIO.LOW)
 
 
-# Motor enrollar soga
+# Control del motor para enrollar soga
 def enrollar():
 
-	if direccion_actual:
+	# Establecer sentido de rotación según dirección
+	if direccion_actual == 1:
 		in_1_state = GPIO.HIGH
 		in_2_state = GPIO.LOW
 	else:
 		in_1_state = GPIO.LOW
 		in_2_state = GPIO.HIGH
 
-	pwm.start(40)
+	# Comenzar enrollar soga
+	pwm.start(45)
 	GPIO.output(in_1, in_1_state)
 	GPIO.output(in_2, in_2_state)
-	sleep(tiempo_en_espera)
+	sleep(tiempo_en_movimiento)
 	pwm.stop()
 
 
@@ -62,12 +64,12 @@ def chequear_direccion(piso_dest):
 
 
 # Acrtualizar variables globales para cada piso actual
-def actualizar_variables_por_piso(piso):
+def actualizar_variables_por_piso(n_piso):
 	global piso_actual
 	global pin_led_amarillo_actual
 	global pin_led_rojo_actual 
 
-	piso_actual = piso 
+	piso_actual = n_piso 
 	pin_led_amarillo_actual = LEDS_AMARILLOS[piso_actual]
 	pin_led_rojo_actual = LEDS_ROJOS[piso_actual]
 
@@ -119,35 +121,37 @@ def loop():
 				# Prender luz roja y amarilla
 				prender_led(pin_led_rojo_actual)
 				prender_led(pin_led_amarillo_actual)
+			# Chequear estado cada 0.1s
 			sleep(0.1)
 	except KeyboardInterrupt:
 		print("Saliendo del bucle!")
 
 
 # Configuraciones globales
-# Configurar GPIO (BCM)
+# Establecer pines (BCM)
 LEDS_AMARILLOS = [8, 24, 18, 14]  	# LEDs que indican cambio de piso
 LEDS_ROJOS = [7, 25, 23, 15]  		# LEDs que indican detención de movimiento 
-BOTONES = [10, 22, 27, 17]  
+BOTONES = [10, 22, 27, 17]
+
+# Configurar GPIO
 GPIO.setup(LEDS_AMARILLOS, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(LEDS_ROJOS, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(BOTONES, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 for b in BOTONES:
 	GPIO.add_event_detect(b, GPIO.RISING, callback=al_presionar, bouncetime=300)
 
-# Configuración del motor
-en_a = 12
-in_1 = 16
+# Configuración del motor(pin BCM)
+en_a = 12	# pin pwm
+in_1 = 16	
 in_2 = 20
-GPIO.setup([en_a, in_1, in_2], GPIO.OUT, initial=GPIO.LOW)  # Configuración de salida
+GPIO.setup([en_a, in_1, in_2], GPIO.OUT, initial=GPIO.LOW)  # Configuración de salida para motor
 pwm = GPIO.PWM(en_a, 1000)  # 1000 Hz
-
 
 # Variables del programa
 en_espera = []  			# Valores numéricos de nº index
 en_movimiento = False  		# Inicio detenido
 tiempo_en_movimiento = 2  	# 2s de movimiento entre cada piso
-tiempo_en_espera = 3  		# 3s de espera de entrepiso
+tiempo_en_espera = 3 		# 3s tiempo de espera DETENCION de piso
 direccion_actual = 1   		# 1: arriba, -1: abajo
 piso_actual = 0  			# 0: p1, 1: p2, 2: p3, 3: p4 
 pin_led_amarillo_actual = LEDS_AMARILLOS[piso_actual]
