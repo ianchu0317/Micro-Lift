@@ -47,9 +47,12 @@ Las medidas según eje:
 Al modificar la medida de altura, será necesario cambiar la variable de `tiempo_en_movimiento` acorde al tiempo necesario para mover el ángulo deseado. Se consigue calculando `ángulo a mover / velocidad angular`. Y el ángulo a mover se consigue de la siguiente manera: `ángulo a mover (rad) = longitud de soga / radio de polea`; mientras que la velocidad angular depende del voltaje utilizado para alimentar el motor (según especificación del fabricante), que en este caso corresponde a 2.88 V - 125 RPM. 
 
 ### Uso del Software
+#### Iniciar programa
 Una vez iniciado sesión en la Raspberry Pi y conectados los pines GPIO de manera correcta, simplemente correr el siguiente código: 
 
 `python controller.py`
+#### Finalizar programa
+Para finalizar programa se debe aplicar `Ctrl + C` para detener el bucle principal y posteriormente la tecla `Enter` para salir del programa.
 
 ## Origen de la idea del proyecto (para mí)
 La idea surgió al principio del año cuando decidí estudiar programación y cuestionar acerca de los algoritmos fundamentales que frecuentamos diariamente (semáforos, ascensores, sistema de estacionamiento, etc). Más tarde, también descubrí que me gustaba poder hacer proyectos y temas como electrónica (básica) para hacer robótica y domótica. 
