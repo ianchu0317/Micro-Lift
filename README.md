@@ -3,6 +3,9 @@
 
 ![Imagen de WhatsApp 2024-09-10 a las 21 27 16_95104079](https://github.com/user-attachments/assets/fccdc1b6-202c-467d-84e9-fa196e0192ba)
 
+Videos explicativos
+- Video 1 (parte a): https://youtu.be/gjsFHzDikcw
+- Video 2 (parte b): https://youtu.be/GTnGwAK6ebU
 
 ## Simulación de ascensor pequeño escrito en Python
 Este proyecto es una simulación física de un ascensor. Para llevar a cabo esta idea se combinaron distintos aspectos tanto de electrónica, diseño y programación.
